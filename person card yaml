@@ -1,0 +1,134 @@
+type: custom:button-card
+### changing alignment and position of fields as well as the grid layout
+styles:
+  card:
+    - padding: 8px
+    - border-radius: 20px
+    - box-shadow: 3px 3px 0px rgba(0, 0, 0, 0.2)
+    - background: rgba(53, 66, 92, 0.65)
+  grid:
+    - display: grid
+    - grid-template-columns: auto 1fr auto
+    - grid-template-rows: auto auto auto
+    - grid-template-areas: |
+        "picture entity sensor1"
+        "picture state sensor1"
+  custom_fields:
+    picture:
+      - grid-area: picture
+      - justify-self: start
+      - align-self: center
+    entity:
+      - grid-area: entity
+      - justify-self: start
+      - align-self: start
+      - text-align: left
+      - margin-left: 15px
+      - margin-top: 5px
+    state:
+      - grid-area: state
+      - justify-self: start
+      - align-self: start
+      - text-align: left
+      - margin-left: 15px
+      - margin-top: null
+    sensor4:
+      - grid-area: sensor4
+      - justify-self: center
+      - align-self: center
+      - text-align: left
+      - margin-left: 15px
+### the custom fields within the card. refer to GRID above to see position
+custom_fields:
+  picture: |
+    [[[
+      let state = states['person.stephen_torney'].state;
+      let borderColor = "gray";
+
+      if (state === "home") {
+        borderColor = "green";
+      } else if (state === "not_home") {
+        borderColor = "#801111";
+      } else if (state === "AH") {
+        borderColor = "#179EDA";
+      } else if (state === "Ilse") {
+        borderColor = "pink";
+      } else {
+        borderColor = "orange";
+      }
+
+      return `<div style="position: relative; margin: 0; padding: 0; border: 3px solid ${borderColor}; border-radius: 50%; width: 40px; height: 40px; display: flex; justify-content: center; align-items: center;">
+                <img src="${states['person.stephen_torney'].attributes.entity_picture}" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover; margin: 0; padding: 0;">
+              </div>`;
+    ]]]
+  entity: |
+    [[[
+      return `<div style="font-size: 16px; font-weight: bold; margin: 0x; padding: 0;">
+                ${states['person.stephen_torney'].attributes.friendly_name}
+              </div>`;
+    ]]]
+### HOME or mins travel time
+  state: |
+    [[[
+      let state = states['person.stephen_torney'].state;
+      if (state === "home") {
+        state = "Home";
+      } else if (state === "not_home") {
+        state = (states['sensor.waze_travel_time'].state) + 'mins away';
+      }
+      return `<div style="font-size: 14px; color: var(--secondary-text-color); margin: 0; padding: 0;">
+                ${state}
+              </div>`;
+    ]]]
+### Battery status of phone
+  sensor1: |
+    [[[
+      let battery = states['sensor.stephens_flip_5_battery_level'].state;
+      let charging = states['sensor.stephens_flip_5_battery_state'].state;
+      let color = "green";
+
+      if (battery < 10) {
+        color = "red";
+      } else if (battery < 30) {
+        color = "orange";
+      } else if (battery < 50) {
+        color = "yellow";
+      } else {
+        color = "green";
+      }
+
+      return `<div style="position: relative; font-size: 14px; color: var(--secondary-text-color); margin: 0; padding: 0;">
+                <svg width="30" height="30" viewBox="0 0 36 36" class="circular-chart">
+                  <path class="circle-bg"
+                    stroke="#505050"
+                    stroke-width="3"
+                    fill="none"
+                    d="M18 2.0845
+                      a 15.9155 15.9155 0 0 1 0 31.831
+                      a 15.9155 15.9155 0 0 1 0 -31.831" />
+                  <path class="circle"
+                    stroke="${color}"
+                    stroke-width="3"
+                    stroke-dasharray="${battery}, 100"
+                    fill="none"
+                    d="M18 2.0845
+                      a 15.9155 15.9155 0 0 1 0 31.831
+                      a 15.9155 15.9155 0 0 1 0 -31.831" />
+                  ${
+                    charging === "charging"
+                      ? `<text x="18" y="24" class="percentage" style="fill:yellow; font-size: 16px; text-anchor: middle; animation: blink 2s infinite;">
+                          ⚡
+                        </text>`
+                      : `<text x="18" y="17" class="percentage" style="fill:#fff; font-size: 10px; text-anchor: middle;">${battery}</text>
+                         <text x="18" y="26" class="percentage" style="fill:#fff; font-size: 8px; text-anchor: middle;">%</text>`
+                  }
+                </svg>
+                <style>
+                  @keyframes blink {
+                    0% { opacity: 1; }
+                    50% { opacity: 0; }
+                    100% { opacity: 1; }
+                  }
+                </style>
+              </div>`;
+    ]]]
