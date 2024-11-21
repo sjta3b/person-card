@@ -38,8 +38,9 @@ styles:
       - align-self: center
       - text-align: left
       - margin-left: 15px
-### the custom fields within the card. refer to GRID above to see position
+### the custom fields within the card. refer to GRID above to see position. margins can be set to a minus value as well.
 custom_fields:
+### Takes picture from HA person. The state is the different zones a person can be, by default home and not_home are used. If you have zones e.g. work set up, change (state === " ") to the name of the zones
   picture: |
     [[[
       let state = states['person.stephen_torney'].state;
@@ -61,6 +62,7 @@ custom_fields:
                 <img src="${states['person.stephen_torney'].attributes.entity_picture}" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover; margin: 0; padding: 0;">
               </div>`;
     ]]]
+### Persons name from person entity
   entity: |
     [[[
       return `<div style="font-size: 16px; font-weight: bold; margin: 0x; padding: 0;">
